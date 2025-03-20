@@ -1,0 +1,182 @@
+{
+    "title": "Subjective Evaluation of Video Generation Quality",
+    "instructions": "Please watch each video and rate the videos based on Four evaluation metrics,\n         1. Prompt following: How well does the video follow the prompt\n         2. Motion Quality: Whether the motion in the video is smooth and natural\n         3. Camera Move: Whether the video present the camera move in a natural way\n         4. Overall: Overall quality of the video\n     Please rate each video on a scale of 1 to 5, where 1 is the lowest and 5 is the highest\n",
+    "groups": [
+        {
+            "sample_id": "ours",
+            "prompt": "A man in business casual and a blonde princess are dancing on the stage, facing each other, camera flying close to the blonde princess.\n",
+            "video": "../results/ours/videos/phantom_5_two_people_dance_2024-06-11_20240610233532.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "w-out-cam-ltx",
+            "prompt": "A wounded female knight is faltering and dramatically collapsing in a poisonous forest.\n",
+            "video": "../results/w-out-cam-ltx/videos/4.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "luma-raw",
+            "prompt": "In an ancient castle basement, a black suit zombie walks down and drops dead, dark studio, rim lighting, two tone lighting, dimly lit.\n",
+            "video": "../results/luma-raw/videos/19.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "w-out-cam-wan",
+            "prompt": "A blonde princess and a black suit men stand and face each other, raising their arms, in a castle basement.\n",
+            "video": "../results/w-out-cam-wan/videos/10.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "runway-raw",
+            "prompt": "A blonde princess is singing in a classic victorian room, casting shadows on the wall.\n",
+            "video": "../results/runway-raw/videos/14.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "luma-raw",
+            "prompt": "A man looking like Elon Musk is cheering with his arms up, with a rocket and a Cybertruck behind him.\n",
+            "video": "../results/luma-raw/videos/2.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "w-out-cam-cogvideo",
+            "prompt": "In an ancient castle basement, the phantom's mask spins to the camera, dark studio, rim lighting, two tone lighting, dimly lit.\n",
+            "video": "../results/w-out-cam-cogvideo/videos/18.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "runway-raw",
+            "prompt": "A blonde princess singing in a classic victorian room, casting shadows on the wall.\n",
+            "video": "../results/runway-raw/videos/13.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "ours",
+            "prompt": "Camera tilting down in an ancient castle basement, where a black suit zombie walks down and drops dead, dark studio, rim lighting, two tone lighting, dimly lit.\n",
+            "video": "../results/ours/videos/phantom_7_phantom_die_2024-06-11_20240610234523.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "w-out-cam-ltx",
+            "prompt": "In an ancient castle basement, the phantom's mask spins to the camera, dark studio, rim lighting, two tone lighting, dimly lit.\n",
+            "video": "../results/w-out-cam-ltx/videos/18.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "w-out-cam-wan",
+            "prompt": "A princess is dancing and spinning on the stage, from extremely dark to have spotlight on the stage and some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.\n",
+            "video": "../results/w-out-cam-wan/videos/6.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "w-out-cam-mochi",
+            "prompt": "In an ancient castle basement, the phantom's mask spins to the camera, dark studio, rim lighting, two tone lighting, dimly lit.\n",
+            "video": "../results/w-out-cam-mochi/videos/18.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "pika-raw",
+            "prompt": "On a theater stage, from extremely dark to have some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.\n",
+            "video": "../results/pika-raw/videos/8.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "w-out-cam-cogvideo",
+            "prompt": "A princess with blonde hair is dancing and spinning on a stage.\n",
+            "video": "../results/w-out-cam-cogvideo/videos/5.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "pika-raw",
+            "prompt": "A blonde princess follows the black suit man in a castle basement.\n",
+            "video": "../results/pika-raw/videos/11.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        },
+        {
+            "sample_id": "w-out-cam-mochi",
+            "prompt": "A princess is dancing and spinning on the stage, from extremely dark to have spotlight on the stage and some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.\n",
+            "video": "../results/w-out-cam-mochi/videos/6.mp4",
+            "captions": [
+                "1. Very poor: Does not follow the prompt at all\n            2. Poor: Barely follows the prompt\n            3. Fair: Somewhat follows the prompt\n            4. Good: Mostly follows the prompt\n            5. Excellent: Perfectly follows the prompt\n",
+                "1. Very poor: Motion is extremely choppy\n            2. Poor: Motion is not smooth\n            3. Fair: Motion is somewhat smooth\n            4. Good: Motion is smooth but not flawless\n            5. Excellent: Motion is perfectly smooth\n",
+                "1. Very poor: Camera movement is unnatural\n            2. Poor: Camera movement is awkward\n            3. Fair: Camera movement is acceptable\n            4. Good: Camera movement is natural but not perfect\n            5. Excellent: Camera movement is perfectly natural\n",
+                "1. Very poor: Overall quality is unacceptable\n            2. Poor: Overall quality is below average\n            3. Fair: Overall quality is average\n            4. Good: Overall quality is above average\n            5. Excellent: Overall quality is outstanding\n"
+            ]
+        }
+    ]
+}

@@ -123,19 +123,19 @@ def generate_html(json_file, output_file, idx):
     }
     #resultOutput {
       width: 100%;
-      height: 80px;
-      margin: 10px 0;
       padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
-    /* Hide iframe on mobile */
-    @media (max-width: 768px) {
-      .google-form-container {
-        display: none;
-      }
+    .success-message {
+      color: green;
+      font-weight: bold;
+      margin: 10px 0;
+      display: none;
     }
     .action-btn {
       padding: 10px;
-      margin: 5px;
+      margin: 5px 0;
       background-color: #f5f5f5;
       border: 1px solid #ddd;
       border-radius: 4px;
@@ -147,11 +147,12 @@ def generate_html(json_file, output_file, idx):
       color: white;
       border: none;
     }
-    .success-message {
-      color: green;
-      font-weight: bold;
-      margin: 10px 0;
-      display: none;
+    
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+      #googleFormFrame {
+        height: 500px;
+      }
     }
   </style>
 </head>
@@ -297,12 +298,9 @@ def generate_html(json_file, output_file, idx):
       return colors[value] || '';
     }
     
-    // Global submit handler function that works on both mobile and desktop
-    function handleFormSubmit(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
+    // Form submission handler - direct approach
+    document.getElementById('submitButton').addEventListener('click', function(event) {
+      event.preventDefault(); // Prevent form from submitting normally
       
       // Collect evaluation data
       var resultArray = [];
@@ -339,91 +337,38 @@ def generate_html(json_file, output_file, idx):
       resultArray.push(ratings.join(","));
       var resultText = resultArray.join(",");
       
-      // Store the result text
+      // Update the text field
       document.getElementById('resultOutput').value = resultText;
       
-      // IMPORTANT: Show UI feedback immediately
-      document.getElementById('loadingMessage').style.display = 'block';
-      document.getElementById('loadingMessage').scrollIntoView({behavior: 'smooth'});
+      // Show the results section
+      document.getElementById('resultContainer').style.display = 'block';
+      document.getElementById('resultContainer').scrollIntoView({behavior: 'smooth'});
       
-      // For direct Google Form submission, we'll use a hidden iframe
-      try {
-        // First create our form-submission iframe if it doesn't exist
-        var submissionFrame = document.getElementById('hidden-submission-frame');
-        if (!submissionFrame) {
-          submissionFrame = document.createElement('iframe');
-          submissionFrame.setAttribute('id', 'hidden-submission-frame');
-          submissionFrame.setAttribute('name', 'hidden-submission-frame');
-          submissionFrame.style.display = 'none';
-          document.body.appendChild(submissionFrame);
-        }
-        
-        // Then create a form element we'll submit
-        var dynamicForm = document.createElement('form');
-        dynamicForm.setAttribute('method', 'post');
-        dynamicForm.setAttribute('action', 'https://docs.google.com/forms/d/e/1FAIpQLSfLl5MpC49YvL2ZBAVlbMGslHX4TfWLl3coTSuZr07MN3qrVg/formResponse');
-        dynamicForm.setAttribute('target', 'hidden-submission-frame');
-        
-        // Add our data input field
-        var inputField = document.createElement('input');
-        inputField.setAttribute('type', 'text');
-        inputField.setAttribute('name', 'entry.940024549');
-        inputField.setAttribute('value', resultText);
-        dynamicForm.appendChild(inputField);
-        
-        // Add the form to the page, submit it, and remove it
-        document.body.appendChild(dynamicForm);
-        dynamicForm.submit();
-        
-        // Show success message after a short delay
-        setTimeout(function() {
-          document.getElementById('loadingMessage').style.display = 'none';
-          document.getElementById('successMessage').style.display = 'block';
-          document.getElementById('successMessage').scrollIntoView({behavior: 'smooth'});
-          document.getElementById('resultContainer').style.display = 'block';
-        }, 2000);
-      } 
-      catch (error) {
-        console.error("Error during submission:", error);
-        // Fallback method if iframe submission fails
-        submitViaFetch(resultText);
+      // Automatically select the text for easier copying
+      var resultOutput = document.getElementById('resultOutput');
+      setTimeout(function() {
+        resultOutput.focus();
+        resultOutput.select();
+      }, 500);
+      
+      // Check if we're on mobile
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        // On mobile, make the form section more visible
+        document.getElementById('mobileFormContainer').style.display = 'block';
       }
       
       return false;
-    }
+    });
     
-    // Fetch API submission as backup
-    function submitViaFetch(resultText) {
-      var formData = new FormData();
-      formData.append('entry.940024549', resultText);
-      
-      fetch('https://docs.google.com/forms/d/e/1FAIpQLSfLl5MpC49YvL2ZBAVlbMGslHX4TfWLl3coTSuZr07MN3qrVg/formResponse', {
-        method: 'POST',
-        mode: 'no-cors',
-        body: formData
-      })
-      .finally(function() {
-        // Always show success message after fetch attempt
-        document.getElementById('loadingMessage').style.display = 'none';
-        document.getElementById('successMessage').style.display = 'block';
-        document.getElementById('successMessage').scrollIntoView({behavior: 'smooth'});
-        document.getElementById('resultContainer').style.display = 'block';
-      });
-    }
+    // Make sure the form doesn't submit traditionally
+    document.getElementById('evaluationForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      return false;
+    });
     
-    // Multiple event bindings for better cross-platform compatibility
-    
-    // 1. Handle button click directly
-    document.getElementById('submitButton').addEventListener('click', handleFormSubmit);
-    
-    // 2. Handle form submission event
-    document.getElementById('evaluationForm').addEventListener('submit', handleFormSubmit);
-    
-    // 3. Backup direct assignment
-    document.getElementById('submitButton').onclick = handleFormSubmit;
-    
-    // Copy data button functionality for backup method
-    document.getElementById('copyDataBtn').addEventListener('click', function() {
+    // Copy button functionality
+    document.getElementById('copyButton').addEventListener('click', function() {
       var resultOutput = document.getElementById('resultOutput');
       resultOutput.select();
       resultOutput.setSelectionRange(0, 99999); // For mobile devices
@@ -434,13 +379,29 @@ def generate_html(json_file, output_file, idx):
           this.innerHTML = '✓ COPIED!';
           
           setTimeout(() => {
-            this.innerHTML = 'Copy Data';
+            this.innerHTML = 'COPY DATA';
             document.getElementById('copySuccess').style.display = 'none';
           }, 2000);
         })
         .catch(err => {
-          alert('Please manually select and copy the text in the box');
+          alert('Please manually select the text and copy it (tap and hold, then select "Copy")');
         });
+    });
+    
+    // Special handling for mobile browsers
+    document.addEventListener('DOMContentLoaded', function() {
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        // For mobile devices, adjust the form display
+        var formFrame = document.getElementById('googleFormFrame');
+        formFrame.style.height = '500px';
+        
+        // Help users see how to complete the two-step process
+        document.getElementById('openFormButton').addEventListener('click', function() {
+          // Show a message before opening the form
+          alert('Your data has been copied. Now paste it into the form that will open.');
+        });
+      }
     });
   </script>
   </script>

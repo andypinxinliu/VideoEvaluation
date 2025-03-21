@@ -1192,7 +1192,7 @@
       </div>
     </div>
     <!-- End of Group 16 -->
-    <button type="submit" class="submit-btn">Complete Evaluation</button>
+  <button type="submit" class="submit-btn" id="submitButton">Complete Evaluation</button>
   </form>
 
   <div id="resultContainer" style="display: none; text-align: center; margin-top: 20px;">
@@ -1245,15 +1245,20 @@
       return colors[value] || '';
     }
     
-    // Form submission handler - direct form submission method
-    document.getElementById('evaluationForm').addEventListener('submit', function(event) {
+    // Form submission handler - direct approach instead of event listener
+    const form = document.getElementById('evaluationForm');
+    const submitButton = document.getElementById('submitButton');
+    
+    submitButton.onclick = function(event) {
       event.preventDefault(); // Prevent form from submitting normally
+      console.log("Submit button clicked");
       
       // Collect evaluation data
       var resultArray = [];
       var evaluationIdx = document.getElementById('evaluationIdx').value;
       var evaluationNumber = "evaluation_" + evaluationIdx;
       resultArray.push(evaluationNumber);
+      console.log("Evaluation ID:", evaluationNumber);
 
       // Get ratings for each group
       var ratings = [];
@@ -1280,12 +1285,19 @@
         alert('Please rate all metrics for all groups');
         return false;
       }
-
+      
+      console.log("All ratings collected:", ratings);
       resultArray.push(ratings.join(","));
       var resultText = resultArray.join(",");
+      console.log("Final result string:", resultText);
       
-      // Store the result text in case we need it later
+      // Always update the result textarea
       document.getElementById('resultOutput').value = resultText;
+      
+      // Always show loading message first
+      document.getElementById('loadingMessage').style.display = 'block';
+      document.getElementById('loadingMessage').scrollIntoView({behavior: 'smooth'});
+      console.log("Loading message displayed");
       
       // Create a hidden form that will submit to Google Form
       var formData = new FormData();
@@ -1293,31 +1305,34 @@
       // Add data to the form with the provided field ID
       formData.append('entry.940024549', resultText);
       
-      // Show a message to the user
-      document.getElementById('loadingMessage').style.display = 'block';
-      document.getElementById('loadingMessage').scrollIntoView({behavior: 'smooth'});
+      console.log("Attempting to submit to Google Form...");
       
-      // Submit the data using fetch API
-      fetch('https://docs.google.com/forms/d/e/1FAIpQLSfLl5MpC49YvL2ZBAVlbMGslHX4TfWLl3coTSuZr07MN3qrVg/formResponse', {
-        method: 'POST',
-        mode: 'no-cors', // This is important for cross-origin requests to Google Forms
-        body: formData
-      })
-      .then(response => {
-        // Due to CORS, we won't get a meaningful response, but we can assume it worked
-        displaySuccess();
-      })
-      .catch(error => {
-        // Even if there's an error, the submission might have worked due to no-cors mode
-        console.error('Error:', error);
-        displaySuccess();
-      });
+      // Force a timeout to ensure UI updates
+      setTimeout(function() {
+        // Submit the data using fetch API
+        fetch('https://docs.google.com/forms/d/e/1FAIpQLSfLl5MpC49YvL2ZBAVlbMGslHX4TfWLl3coTSuZr07MN3qrVg/formResponse', {
+          method: 'POST',
+          mode: 'no-cors', // This is important for cross-origin requests to Google Forms
+          body: formData
+        })
+        .then(response => {
+          console.log("Fetch completed (note: with no-cors mode, we can't see actual success/failure)");
+          // We'll just assume it worked since we can't get response details with no-cors
+          displaySuccess();
+        })
+        .catch(error => {
+          console.error('Error in fetch:', error);
+          // Still display success, as the error is likely just CORS-related
+          displaySuccess();
+        });
+      }, 1000); // Short delay to ensure UI updates
       
       return false;
-    });
+    };
     
     // Function to display success message
     function displaySuccess() {
+      console.log("Displaying success message");
       // Hide loading message
       document.getElementById('loadingMessage').style.display = 'none';
       
@@ -1325,7 +1340,7 @@
       document.getElementById('successMessage').style.display = 'block';
       document.getElementById('successMessage').scrollIntoView({behavior: 'smooth'});
       
-      // Alternative submission options are still shown in case direct submission failed
+      // Show the alternative submission methods just in case
       document.getElementById('resultContainer').style.display = 'block';
     }
     

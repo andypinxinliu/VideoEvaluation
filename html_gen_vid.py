@@ -8,7 +8,7 @@ def generate_html(json_file, output_file, idx):
     
     num_groups = len(data['groups'])
     
-    # Start HTML content without f-strings for the CSS part that has backslashes
+    # Start HTML content
     html_content = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,213 +18,318 @@ def generate_html(json_file, output_file, idx):
     
     html_content += data['title'] + """</title>
   <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
-    table, th, td {
-      border: 1px solid black;
-    }
-    th, td {
+    body {
+      margin: 0;
       padding: 10px;
-      text-align: center;
     }
-    .rating {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
+    h1 {
+      font-size: 1.5rem;
+      margin-top: 10px;
     }
-    .warning {
-      color: red;
-      font-weight: bold;
-      display: none;
+    h3 {
+      font-size: 1.2rem;
+      margin-top: 20px;
+      background-color: #f0f0f0;
+      padding: 5px;
+    }
+    .group-container {
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 10px;
+    }
+    .video-container {
+      width: 100%;
+      margin-bottom: 10px;
     }
     video {
       width: 100%;
-      max-width: 300px;
+      max-height: 300px;
+      object-fit: contain;
     }
     .prompt-text {
-      margin-top: 10px;
+      margin: 10px 0;
       font-style: italic;
       font-size: 0.9em;
-      max-width: 300px;
-      text-align: left;
+      border-left: 3px solid #ccc;
+      padding-left: 10px;
+    }
+    .metric {
+      margin: 15px 0;
+      padding: 8px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    .metric-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .rating {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .rating label {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      border: 1px solid #ddd;
+      background-color: #f5f5f5;
+      margin: 0 2px;
+      border-radius: 4px;
+    }
+    .rating label:active {
+      background-color: #e0e0e0;
+    }
+    .rating input {
+      display: none;
+    }
+    .rating input:checked + span {
+      color: white;
+      font-weight: bold;
+    }
+    .rating label:nth-child(1) input:checked + span { background-color: #ff4d4d; }
+    .rating label:nth-child(2) input:checked + span { background-color: #ff9966; }
+    .rating label:nth-child(3) input:checked + span { background-color: #ffcc00; }
+    .rating label:nth-child(4) input:checked + span { background-color: #99cc33; }
+    .rating label:nth-child(5) input:checked + span { background-color: #33cc33; }
+    .rating label span {
+      display: block;
+      padding: 5px 0;
+      border-radius: 3px;
+    }
+    .warning {
+      color: red;
+      font-size: 0.8em;
+      margin-top: 2px;
+      display: none;
+    }
+    .submit-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      width: 100%;
+      margin: 20px 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #resultOutput {
+      width: 100%;
+      height: 80px;
+      margin: 10px 0;
+    }
+    /* Hide iframe on mobile */
+    @media (max-width: 768px) {
+      .google-form-container {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
 
-<section>
-  <div>
-    <h1>"""
+  <h1>"""
     
     html_content += data['title'] + """</h1>
-    <p>Thank you for participating in the subjective evaluation.</p>
-    <p><strong>Instructions</strong>: </p>
-    <p>"""
+  <p>Thank you for participating in the evaluation.</p>
+  <p><strong>Instructions</strong>:</p>
+  <p>"""
     
     html_content += data['instructions'].replace('\n', '<br>') + """</p>
-    <br>
-    <form id="evaluationForm">
-      <input type="hidden" id="evaluationIdx" value=\""""
-      
-    html_content += str(idx) + """\">
+  
+  <form id="evaluationForm">
+    <input type="hidden" id="evaluationIdx" value=\"""" + str(idx) + """\">
 """
 
     # Add each group
-    for idx, group in enumerate(data['groups']):
+    for group_idx, group in enumerate(data['groups']):
         prompt_text = group.get('prompt', 'No prompt available')
         
         group_html = """
-      <!-- Group """ + str(idx + 1) + """ -->
-      <h3>Group """ + str(idx + 1) + """</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src=\"""" + group['video'] + """\" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> """ + prompt_text + """
-                </div>
-              </td>
-              <td style="text-align: center">
-                """ + group['captions'][0].replace('\n', '<br>') + """<br>
-                <div class="rating" id="group_""" + str(idx + 1) + """_rating_1">
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_""" + str(idx + 1) + """_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                """ + group['captions'][1].replace('\n', '<br>') + """<br>
-                <div class="rating" id="group_""" + str(idx + 1) + """_rating_2">
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_""" + str(idx + 1) + """_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                """ + group['captions'][2].replace('\n', '<br>') + """<br>
-                <div class="rating" id="group_""" + str(idx + 1) + """_rating_3">
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_""" + str(idx + 1) + """_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                """ + group['captions'][3].replace('\n', '<br>') + """<br>
-                <div class="rating" id="group_""" + str(idx + 1) + """_rating_4">
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_""" + str(idx + 1) + """_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_""" + str(idx + 1) + """_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <!-- Group """ + str(group_idx + 1) + """ -->
+    <div class="group-container">
+      <h3>Group """ + str(group_idx + 1) + """</h3>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src=\"""" + group['video'] + """\" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group """ + str(idx + 1) + """. -->"""
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> """ + prompt_text + """
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_""" + str(group_idx + 1) + """_rating_1">
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_""" + str(group_idx + 1) + """_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_""" + str(group_idx + 1) + """_rating_2">
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_""" + str(group_idx + 1) + """_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_""" + str(group_idx + 1) + """_rating_3">
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_""" + str(group_idx + 1) + """_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_""" + str(group_idx + 1) + """_rating_4">
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_""" + str(group_idx + 1) + """_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_""" + str(group_idx + 1) + """_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group """ + str(group_idx + 1) + """ -->"""
         
         html_content += group_html
 
-    # JavaScript part - avoid using f-strings with backslashes
+    # JavaScript part
     js_part = """
-      <br><br>
-      <!-- Submit button -->
-      <div style="text-align: center;">
-        <input type="submit" value="Complete" style="width: 150px; height: 50px;">
-      </div>
-    </form>
+    <button type="submit" class="submit-btn">Complete Evaluation</button>
+  </form>
 
-    <div id="resultText" style="text-align: center; display: none;">
-      <p>Please copy the following text and paste it into Google Forms(请复制以下文本并粘贴到Google Forms中):</p>
-      <textarea id="resultOutput"></textarea>
-    </div>
-    <div style="display: flex; justify-content: center; margin-top: 20px;">
-      <iframe src="https://forms.gle/Qaj5fN7ENBCjRJkF8" width="640" height="451" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-    </div>
-  </section>
-</div>
-<script>
-  document.getElementById('evaluationForm').onsubmit = function(event) {
+  <div id="resultText" style="display: none;">
+    <p>Please copy the following text and paste it into Google Forms:</p>
+    <textarea id="resultOutput" readonly></textarea>
+    <button id="copyButton" style="width: 100%; padding: 10px; margin-bottom: 10px;">Copy to Clipboard</button>
+  </div>
+  
+  <div class="google-form-container">
+    <iframe src="https://forms.gle/Qaj5fN7ENBCjRJkF8" width="100%" height="450" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+  </div>
+
+  <script>
+    // Add touch-friendly behavior
+    document.querySelectorAll('.rating label').forEach(label => {
+      label.addEventListener('click', function() {
+        // Remove active class from siblings
+        const parent = this.parentNode;
+        parent.querySelectorAll('label').forEach(sibling => {
+          sibling.querySelector('span').style.backgroundColor = '';
+        });
+        
+        // Add active class to selected
+        this.querySelector('span').style.backgroundColor = getColorForValue(this.querySelector('input').value);
+        
+        // Hide warning if visible
+        const warningId = 'warning_' + parent.id;
+        document.getElementById(warningId).style.display = 'none';
+      });
+    });
+    
+    function getColorForValue(value) {
+      const colors = {
+        '1': '#ff4d4d',
+        '2': '#ff9966',
+        '3': '#ffcc00',
+        '4': '#99cc33',
+        '5': '#33cc33'
+      };
+      return colors[value] || '';
+    }
+    
+    document.getElementById('evaluationForm').onsubmit = function(event) {
       event.preventDefault(); // Prevent form from submitting
 
       var resultArray = [];
-      var currentTime = new Date().toISOString();
-      var evaluationIdx = document.getElementById('evaluationIdx').value; // Get evaluation_idx from hidden input
-      var evaluationNumber = "evaluation_" + evaluationIdx; // Construct evaluation number using evaluation_idx
+      var evaluationIdx = document.getElementById('evaluationIdx').value;
+      var evaluationNumber = "evaluation_" + evaluationIdx;
 
       resultArray.push(evaluationNumber);
 
-      // Get user selection for each group
-      var choices = [];
-      var sources = [];
+      // Get ratings for each group
       var ratings = [];
-      var sample_ids = [];
       var valid = true;
 
       for (var i = 1; i <= """ + str(num_groups) + """; i++) {
-          var groupName = "group_" + i;
+        var groupName = "group_" + i;
+        
+        // Get ratings for each metric
+        for (var j = 1; j <= 4; j++) {
+          var ratingName = groupName + "_rating_" + j;
+          var rating = document.querySelector('input[name="' + ratingName + '"]:checked')?.value;
           
-          // Get ratings for each caption
-          for (var j = 1; j <= 4; j++) {
-              var rating = document.querySelector('input[name="' + groupName + '_rating_' + j + '"]:checked')?.value;
-              if (!rating) {
-                  document.getElementById('warning_' + groupName + '_rating_' + j).style.display = 'block';
-                  valid = false;
-              } else {
-                  document.getElementById('warning_' + groupName + '_rating_' + j).style.display = 'none';
-                  ratings.push(rating);
-              }
+          if (!rating) {
+            document.getElementById('warning_' + ratingName).style.display = 'block';
+            valid = false;
+          } else {
+            ratings.push(rating);
           }
+        }
       }
 
       if (!valid) {
-          alert('Please rate all captions.');
-          return;
+        alert('Please rate all metrics for all groups');
+        return;
       }
 
       resultArray.push(ratings.join(","));
 
       // Show result text and fill textarea
       var resultText = resultArray.join(",");
-      var resultOutput = document.getElementById('resultOutput');
-      resultOutput.textContent = resultText;
-      resultOutput.style.width = '80%';  // Set the width to 80%
-      resultOutput.style.height = '200px';  // Set the height to 200px
+      document.getElementById('resultOutput').value = resultText;
       document.getElementById('resultText').style.display = 'block';
-      };
-</script>
+      
+      // Scroll to results
+      document.getElementById('resultText').scrollIntoView({behavior: 'smooth'});
+    };
+    
+    // Add copy to clipboard functionality
+    document.getElementById('copyButton').addEventListener('click', function() {
+      var resultOutput = document.getElementById('resultOutput');
+      resultOutput.select();
+      resultOutput.setSelectionRange(0, 99999); // For mobile devices
+      
+      navigator.clipboard.writeText(resultOutput.value)
+        .then(() => {
+          this.textContent = 'Copied!';
+          setTimeout(() => {
+            this.textContent = 'Copy to Clipboard';
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('Failed to copy: ', err);
+        });
+    });
+  </script>
 </body>
 </html>"""
 

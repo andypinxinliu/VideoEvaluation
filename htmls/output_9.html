@@ -5,1381 +5,1278 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subjective Evaluation of Video Generation Quality</title>
   <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
-    table, th, td {
-      border: 1px solid black;
-    }
-    th, td {
+    body {
+      margin: 0;
       padding: 10px;
-      text-align: center;
     }
-    .rating {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
+    h1 {
+      font-size: 1.5rem;
+      margin-top: 10px;
     }
-    .warning {
-      color: red;
-      font-weight: bold;
-      display: none;
+    h3 {
+      font-size: 1.2rem;
+      margin-top: 20px;
+      background-color: #f0f0f0;
+      padding: 5px;
+    }
+    .group-container {
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 10px;
+    }
+    .video-container {
+      width: 100%;
+      margin-bottom: 10px;
     }
     video {
       width: 100%;
-      max-width: 300px;
+      max-height: 300px;
+      object-fit: contain;
     }
     .prompt-text {
-      margin-top: 10px;
+      margin: 10px 0;
       font-style: italic;
       font-size: 0.9em;
-      max-width: 300px;
-      text-align: left;
+      border-left: 3px solid #ccc;
+      padding-left: 10px;
+    }
+    .metric {
+      margin: 15px 0;
+      padding: 8px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    .metric-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .rating {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .rating label {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      border: 1px solid #ddd;
+      background-color: #f5f5f5;
+      margin: 0 2px;
+      border-radius: 4px;
+    }
+    .rating label:active {
+      background-color: #e0e0e0;
+    }
+    .rating input {
+      display: none;
+    }
+    .rating input:checked + span {
+      color: white;
+      font-weight: bold;
+    }
+    .rating label:nth-child(1) input:checked + span { background-color: #ff4d4d; }
+    .rating label:nth-child(2) input:checked + span { background-color: #ff9966; }
+    .rating label:nth-child(3) input:checked + span { background-color: #ffcc00; }
+    .rating label:nth-child(4) input:checked + span { background-color: #99cc33; }
+    .rating label:nth-child(5) input:checked + span { background-color: #33cc33; }
+    .rating label span {
+      display: block;
+      padding: 5px 0;
+      border-radius: 3px;
+    }
+    .warning {
+      color: red;
+      font-size: 0.8em;
+      margin-top: 2px;
+      display: none;
+    }
+    .submit-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      width: 100%;
+      margin: 20px 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #resultOutput {
+      width: 100%;
+      height: 80px;
+      margin: 10px 0;
+    }
+    /* Hide iframe on mobile */
+    @media (max-width: 768px) {
+      .google-form-container {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
 
-<section>
-  <div>
-    <h1>Subjective Evaluation of Video Generation Quality</h1>
-    <p>Thank you for participating in the subjective evaluation.</p>
-    <p><strong>Instructions</strong>: </p>
-    <p>Please watch each video and rate the videos based on Four evaluation metrics,<br>         1. Prompt following: How well does the video follow the prompt<br>         2. Motion Quality: Whether the motion in the video is smooth and natural<br>         3. Camera Move: Whether the video present the camera move in a natural way<br>         4. Overall: Overall quality of the video<br>     Please rate each video on a scale of 1 to 5, where 1 is the lowest and 5 is the highest<br></p>
-    <br>
-    <form id="evaluationForm">
-      <input type="hidden" id="evaluationIdx" value="9">
+  <h1>Subjective Evaluation of Video Generation Quality</h1>
+  <p>Thank you for participating in the evaluation.</p>
+  <p><strong>Instructions</strong>:</p>
+  <p>Please watch each video and rate the videos based on Four evaluation metrics,<br>         1. Prompt following: How well does the video follow the prompt<br>         2. Motion Quality: Whether the motion in the video is smooth and natural<br>         3. Camera Move: Whether the video present the camera move in a natural way<br>         4. Overall: Overall quality of the video<br>     Please rate each video on a scale of 1 to 5, where 1 is the lowest and 5 is the highest<br></p>
+  
+  <form id="evaluationForm">
+    <input type="hidden" id="evaluationIdx" value="9">
 
-      <!-- Group 1 -->
+    <!-- Group 1 -->
+    <div class="group-container">
       <h3>Group 1</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/w-out-cam-cogvideo/videos/7.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> A blonde girl is waving her hand on the stage.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_1_rating_1">
-                  <label><input type="radio" name="group_1_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_1_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_1_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_1_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_1_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_1_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_1_rating_2">
-                  <label><input type="radio" name="group_1_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_1_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_1_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_1_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_1_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_1_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_1_rating_3">
-                  <label><input type="radio" name="group_1_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_1_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_1_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_1_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_1_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_1_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_1_rating_4">
-                  <label><input type="radio" name="group_1_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_1_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_1_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_1_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_1_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_1_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/w-out-cam-cogvideo/videos/7.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 1. -->
-      <!-- Group 2 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> A blonde girl is waving her hand on the stage.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_1_rating_1">
+          <label><input type="radio" name="group_1_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_1_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_1_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_1_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_1_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_1_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_1_rating_2">
+          <label><input type="radio" name="group_1_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_1_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_1_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_1_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_1_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_1_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_1_rating_3">
+          <label><input type="radio" name="group_1_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_1_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_1_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_1_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_1_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_1_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_1_rating_4">
+          <label><input type="radio" name="group_1_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_1_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_1_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_1_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_1_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_1_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 1 -->
+    <!-- Group 2 -->
+    <div class="group-container">
       <h3>Group 2</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/w-out-cam-mochi/videos/15.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> The black suit man is angry on the theater stage with his shadow on the stage curtain.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_2_rating_1">
-                  <label><input type="radio" name="group_2_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_2_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_2_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_2_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_2_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_2_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_2_rating_2">
-                  <label><input type="radio" name="group_2_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_2_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_2_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_2_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_2_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_2_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_2_rating_3">
-                  <label><input type="radio" name="group_2_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_2_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_2_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_2_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_2_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_2_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_2_rating_4">
-                  <label><input type="radio" name="group_2_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_2_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_2_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_2_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_2_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_2_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/w-out-cam-mochi/videos/15.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 2. -->
-      <!-- Group 3 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> The black suit man is angry on the theater stage with his shadow on the stage curtain.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_2_rating_1">
+          <label><input type="radio" name="group_2_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_2_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_2_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_2_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_2_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_2_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_2_rating_2">
+          <label><input type="radio" name="group_2_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_2_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_2_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_2_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_2_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_2_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_2_rating_3">
+          <label><input type="radio" name="group_2_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_2_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_2_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_2_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_2_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_2_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_2_rating_4">
+          <label><input type="radio" name="group_2_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_2_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_2_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_2_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_2_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_2_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 2 -->
+    <!-- Group 3 -->
+    <div class="group-container">
       <h3>Group 3</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/runway-raw/videos/9.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> A blonde princess walks towards a mirror, then rises straight up with light reflecting on the mirror.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_3_rating_1">
-                  <label><input type="radio" name="group_3_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_3_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_3_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_3_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_3_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_3_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_3_rating_2">
-                  <label><input type="radio" name="group_3_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_3_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_3_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_3_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_3_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_3_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_3_rating_3">
-                  <label><input type="radio" name="group_3_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_3_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_3_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_3_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_3_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_3_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_3_rating_4">
-                  <label><input type="radio" name="group_3_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_3_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_3_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_3_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_3_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_3_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/runway-raw/videos/9.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 3. -->
-      <!-- Group 4 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> A blonde princess walks towards a mirror, then rises straight up with light reflecting on the mirror.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_3_rating_1">
+          <label><input type="radio" name="group_3_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_3_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_3_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_3_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_3_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_3_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_3_rating_2">
+          <label><input type="radio" name="group_3_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_3_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_3_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_3_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_3_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_3_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_3_rating_3">
+          <label><input type="radio" name="group_3_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_3_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_3_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_3_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_3_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_3_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_3_rating_4">
+          <label><input type="radio" name="group_3_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_3_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_3_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_3_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_3_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_3_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 3 -->
+    <!-- Group 4 -->
+    <div class="group-container">
       <h3>Group 4</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/w-out-cam-wan/videos/8.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> On a theater stage, from extremely dark to have some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_4_rating_1">
-                  <label><input type="radio" name="group_4_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_4_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_4_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_4_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_4_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_4_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_4_rating_2">
-                  <label><input type="radio" name="group_4_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_4_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_4_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_4_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_4_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_4_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_4_rating_3">
-                  <label><input type="radio" name="group_4_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_4_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_4_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_4_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_4_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_4_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_4_rating_4">
-                  <label><input type="radio" name="group_4_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_4_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_4_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_4_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_4_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_4_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/w-out-cam-wan/videos/8.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 4. -->
-      <!-- Group 5 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> On a theater stage, from extremely dark to have some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_4_rating_1">
+          <label><input type="radio" name="group_4_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_4_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_4_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_4_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_4_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_4_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_4_rating_2">
+          <label><input type="radio" name="group_4_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_4_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_4_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_4_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_4_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_4_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_4_rating_3">
+          <label><input type="radio" name="group_4_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_4_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_4_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_4_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_4_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_4_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_4_rating_4">
+          <label><input type="radio" name="group_4_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_4_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_4_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_4_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_4_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_4_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 4 -->
+    <!-- Group 5 -->
+    <div class="group-container">
       <h3>Group 5</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/luma-raw/videos/16.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> A man in business casual and a blonde princess are dancing on the stage, facing each other.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_5_rating_1">
-                  <label><input type="radio" name="group_5_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_5_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_5_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_5_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_5_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_5_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_5_rating_2">
-                  <label><input type="radio" name="group_5_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_5_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_5_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_5_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_5_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_5_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_5_rating_3">
-                  <label><input type="radio" name="group_5_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_5_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_5_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_5_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_5_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_5_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_5_rating_4">
-                  <label><input type="radio" name="group_5_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_5_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_5_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_5_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_5_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_5_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/luma-raw/videos/16.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 5. -->
-      <!-- Group 6 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> A man in business casual and a blonde princess are dancing on the stage, facing each other.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_5_rating_1">
+          <label><input type="radio" name="group_5_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_5_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_5_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_5_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_5_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_5_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_5_rating_2">
+          <label><input type="radio" name="group_5_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_5_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_5_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_5_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_5_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_5_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_5_rating_3">
+          <label><input type="radio" name="group_5_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_5_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_5_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_5_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_5_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_5_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_5_rating_4">
+          <label><input type="radio" name="group_5_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_5_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_5_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_5_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_5_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_5_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 5 -->
+    <!-- Group 6 -->
+    <div class="group-container">
       <h3>Group 6</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/runway-raw/videos/5.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> A princess with blonde hair is dancing and spinning on a stage.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_6_rating_1">
-                  <label><input type="radio" name="group_6_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_6_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_6_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_6_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_6_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_6_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_6_rating_2">
-                  <label><input type="radio" name="group_6_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_6_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_6_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_6_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_6_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_6_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_6_rating_3">
-                  <label><input type="radio" name="group_6_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_6_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_6_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_6_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_6_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_6_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_6_rating_4">
-                  <label><input type="radio" name="group_6_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_6_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_6_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_6_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_6_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_6_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/runway-raw/videos/5.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 6. -->
-      <!-- Group 7 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> A princess with blonde hair is dancing and spinning on a stage.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_6_rating_1">
+          <label><input type="radio" name="group_6_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_6_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_6_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_6_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_6_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_6_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_6_rating_2">
+          <label><input type="radio" name="group_6_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_6_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_6_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_6_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_6_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_6_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_6_rating_3">
+          <label><input type="radio" name="group_6_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_6_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_6_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_6_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_6_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_6_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_6_rating_4">
+          <label><input type="radio" name="group_6_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_6_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_6_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_6_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_6_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_6_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 6 -->
+    <!-- Group 7 -->
+    <div class="group-container">
       <h3>Group 7</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/w-out-cam-ltx/videos/8.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> On a theater stage, from extremely dark to have some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_7_rating_1">
-                  <label><input type="radio" name="group_7_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_7_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_7_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_7_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_7_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_7_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_7_rating_2">
-                  <label><input type="radio" name="group_7_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_7_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_7_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_7_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_7_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_7_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_7_rating_3">
-                  <label><input type="radio" name="group_7_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_7_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_7_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_7_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_7_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_7_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_7_rating_4">
-                  <label><input type="radio" name="group_7_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_7_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_7_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_7_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_7_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_7_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/w-out-cam-ltx/videos/8.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 7. -->
-      <!-- Group 8 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> On a theater stage, from extremely dark to have some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_7_rating_1">
+          <label><input type="radio" name="group_7_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_7_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_7_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_7_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_7_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_7_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_7_rating_2">
+          <label><input type="radio" name="group_7_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_7_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_7_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_7_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_7_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_7_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_7_rating_3">
+          <label><input type="radio" name="group_7_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_7_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_7_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_7_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_7_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_7_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_7_rating_4">
+          <label><input type="radio" name="group_7_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_7_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_7_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_7_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_7_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_7_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 7 -->
+    <!-- Group 8 -->
+    <div class="group-container">
       <h3>Group 8</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/w-out-cam-mochi/videos/6.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> A princess is dancing and spinning on the stage, from extremely dark to have spotlight on the stage and some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_8_rating_1">
-                  <label><input type="radio" name="group_8_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_8_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_8_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_8_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_8_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_8_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_8_rating_2">
-                  <label><input type="radio" name="group_8_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_8_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_8_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_8_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_8_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_8_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_8_rating_3">
-                  <label><input type="radio" name="group_8_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_8_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_8_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_8_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_8_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_8_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_8_rating_4">
-                  <label><input type="radio" name="group_8_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_8_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_8_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_8_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_8_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_8_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/w-out-cam-mochi/videos/6.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 8. -->
-      <!-- Group 9 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> A princess is dancing and spinning on the stage, from extremely dark to have spotlight on the stage and some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_8_rating_1">
+          <label><input type="radio" name="group_8_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_8_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_8_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_8_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_8_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_8_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_8_rating_2">
+          <label><input type="radio" name="group_8_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_8_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_8_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_8_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_8_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_8_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_8_rating_3">
+          <label><input type="radio" name="group_8_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_8_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_8_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_8_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_8_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_8_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_8_rating_4">
+          <label><input type="radio" name="group_8_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_8_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_8_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_8_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_8_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_8_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 8 -->
+    <!-- Group 9 -->
+    <div class="group-container">
       <h3>Group 9</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/ours/videos/phantom_7_mask_2024-06-11_20240610234713.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> Camera fixed, in an ancient castle basement, the phantom's mask spins to the camera, dark studio, rim lighting, two tone lighting, dimly lit.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_9_rating_1">
-                  <label><input type="radio" name="group_9_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_9_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_9_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_9_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_9_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_9_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_9_rating_2">
-                  <label><input type="radio" name="group_9_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_9_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_9_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_9_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_9_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_9_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_9_rating_3">
-                  <label><input type="radio" name="group_9_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_9_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_9_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_9_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_9_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_9_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_9_rating_4">
-                  <label><input type="radio" name="group_9_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_9_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_9_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_9_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_9_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_9_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/ours/videos/phantom_7_mask_2024-06-11_20240610234713.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 9. -->
-      <!-- Group 10 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> Camera fixed, in an ancient castle basement, the phantom's mask spins to the camera, dark studio, rim lighting, two tone lighting, dimly lit.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_9_rating_1">
+          <label><input type="radio" name="group_9_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_9_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_9_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_9_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_9_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_9_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_9_rating_2">
+          <label><input type="radio" name="group_9_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_9_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_9_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_9_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_9_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_9_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_9_rating_3">
+          <label><input type="radio" name="group_9_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_9_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_9_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_9_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_9_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_9_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_9_rating_4">
+          <label><input type="radio" name="group_9_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_9_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_9_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_9_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_9_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_9_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 9 -->
+    <!-- Group 10 -->
+    <div class="group-container">
       <h3>Group 10</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/w-out-cam-wan/videos/15.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> The black suit man is angry on the theater stage with his shadow on the stage curtain.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_10_rating_1">
-                  <label><input type="radio" name="group_10_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_10_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_10_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_10_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_10_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_10_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_10_rating_2">
-                  <label><input type="radio" name="group_10_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_10_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_10_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_10_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_10_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_10_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_10_rating_3">
-                  <label><input type="radio" name="group_10_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_10_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_10_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_10_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_10_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_10_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_10_rating_4">
-                  <label><input type="radio" name="group_10_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_10_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_10_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_10_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_10_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_10_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/w-out-cam-wan/videos/15.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 10. -->
-      <!-- Group 11 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> The black suit man is angry on the theater stage with his shadow on the stage curtain.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_10_rating_1">
+          <label><input type="radio" name="group_10_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_10_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_10_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_10_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_10_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_10_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_10_rating_2">
+          <label><input type="radio" name="group_10_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_10_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_10_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_10_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_10_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_10_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_10_rating_3">
+          <label><input type="radio" name="group_10_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_10_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_10_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_10_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_10_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_10_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_10_rating_4">
+          <label><input type="radio" name="group_10_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_10_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_10_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_10_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_10_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_10_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 10 -->
+    <!-- Group 11 -->
+    <div class="group-container">
       <h3>Group 11</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/pika-raw/videos/8.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> On a theater stage, from extremely dark to have some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_11_rating_1">
-                  <label><input type="radio" name="group_11_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_11_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_11_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_11_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_11_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_11_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_11_rating_2">
-                  <label><input type="radio" name="group_11_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_11_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_11_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_11_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_11_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_11_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_11_rating_3">
-                  <label><input type="radio" name="group_11_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_11_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_11_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_11_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_11_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_11_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_11_rating_4">
-                  <label><input type="radio" name="group_11_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_11_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_11_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_11_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_11_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_11_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/pika-raw/videos/8.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 11. -->
-      <!-- Group 12 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> On a theater stage, from extremely dark to have some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_11_rating_1">
+          <label><input type="radio" name="group_11_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_11_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_11_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_11_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_11_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_11_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_11_rating_2">
+          <label><input type="radio" name="group_11_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_11_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_11_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_11_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_11_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_11_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_11_rating_3">
+          <label><input type="radio" name="group_11_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_11_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_11_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_11_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_11_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_11_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_11_rating_4">
+          <label><input type="radio" name="group_11_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_11_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_11_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_11_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_11_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_11_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 11 -->
+    <!-- Group 12 -->
+    <div class="group-container">
       <h3>Group 12</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/ours/videos/phantom_1_camera_from_below_the_stage_2024-06-13_20240613103849.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> Camera raises from below stage, overlooking the stage and scanning from right to left, over a princess dancing and spinning on the stage, from extremely dark to have spotlight on the stage and some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_12_rating_1">
-                  <label><input type="radio" name="group_12_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_12_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_12_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_12_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_12_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_12_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_12_rating_2">
-                  <label><input type="radio" name="group_12_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_12_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_12_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_12_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_12_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_12_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_12_rating_3">
-                  <label><input type="radio" name="group_12_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_12_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_12_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_12_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_12_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_12_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_12_rating_4">
-                  <label><input type="radio" name="group_12_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_12_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_12_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_12_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_12_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_12_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/ours/videos/phantom_1_camera_from_below_the_stage_2024-06-13_20240613103849.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 12. -->
-      <!-- Group 13 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> Camera raises from below stage, overlooking the stage and scanning from right to left, over a princess dancing and spinning on the stage, from extremely dark to have spotlight on the stage and some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_12_rating_1">
+          <label><input type="radio" name="group_12_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_12_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_12_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_12_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_12_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_12_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_12_rating_2">
+          <label><input type="radio" name="group_12_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_12_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_12_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_12_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_12_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_12_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_12_rating_3">
+          <label><input type="radio" name="group_12_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_12_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_12_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_12_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_12_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_12_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_12_rating_4">
+          <label><input type="radio" name="group_12_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_12_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_12_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_12_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_12_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_12_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 12 -->
+    <!-- Group 13 -->
+    <div class="group-container">
       <h3>Group 13</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/w-out-cam-cogvideo/videos/16.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> A man in business casual and a blonde princess are dancing on the stage, facing each other.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_13_rating_1">
-                  <label><input type="radio" name="group_13_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_13_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_13_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_13_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_13_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_13_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_13_rating_2">
-                  <label><input type="radio" name="group_13_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_13_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_13_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_13_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_13_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_13_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_13_rating_3">
-                  <label><input type="radio" name="group_13_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_13_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_13_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_13_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_13_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_13_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_13_rating_4">
-                  <label><input type="radio" name="group_13_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_13_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_13_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_13_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_13_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_13_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/w-out-cam-cogvideo/videos/16.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 13. -->
-      <!-- Group 14 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> A man in business casual and a blonde princess are dancing on the stage, facing each other.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_13_rating_1">
+          <label><input type="radio" name="group_13_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_13_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_13_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_13_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_13_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_13_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_13_rating_2">
+          <label><input type="radio" name="group_13_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_13_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_13_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_13_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_13_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_13_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_13_rating_3">
+          <label><input type="radio" name="group_13_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_13_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_13_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_13_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_13_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_13_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_13_rating_4">
+          <label><input type="radio" name="group_13_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_13_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_13_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_13_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_13_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_13_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 13 -->
+    <!-- Group 14 -->
+    <div class="group-container">
       <h3>Group 14</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/pika-raw/videos/11.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> A blonde princess follows the black suit man in a castle basement.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_14_rating_1">
-                  <label><input type="radio" name="group_14_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_14_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_14_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_14_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_14_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_14_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_14_rating_2">
-                  <label><input type="radio" name="group_14_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_14_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_14_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_14_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_14_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_14_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_14_rating_3">
-                  <label><input type="radio" name="group_14_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_14_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_14_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_14_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_14_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_14_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_14_rating_4">
-                  <label><input type="radio" name="group_14_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_14_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_14_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_14_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_14_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_14_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/pika-raw/videos/11.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 14. -->
-      <!-- Group 15 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> A blonde princess follows the black suit man in a castle basement.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_14_rating_1">
+          <label><input type="radio" name="group_14_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_14_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_14_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_14_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_14_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_14_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_14_rating_2">
+          <label><input type="radio" name="group_14_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_14_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_14_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_14_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_14_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_14_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_14_rating_3">
+          <label><input type="radio" name="group_14_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_14_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_14_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_14_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_14_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_14_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_14_rating_4">
+          <label><input type="radio" name="group_14_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_14_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_14_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_14_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_14_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_14_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 14 -->
+    <!-- Group 15 -->
+    <div class="group-container">
       <h3>Group 15</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/w-out-cam-ltx/videos/16.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> A man in business casual and a blonde princess are dancing on the stage, facing each other.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_15_rating_1">
-                  <label><input type="radio" name="group_15_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_15_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_15_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_15_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_15_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_15_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_15_rating_2">
-                  <label><input type="radio" name="group_15_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_15_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_15_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_15_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_15_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_15_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_15_rating_3">
-                  <label><input type="radio" name="group_15_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_15_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_15_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_15_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_15_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_15_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_15_rating_4">
-                  <label><input type="radio" name="group_15_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_15_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_15_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_15_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_15_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_15_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/w-out-cam-ltx/videos/16.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 15. -->
-      <!-- Group 16 -->
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> A man in business casual and a blonde princess are dancing on the stage, facing each other.
+
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_15_rating_1">
+          <label><input type="radio" name="group_15_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_15_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_15_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_15_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_15_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_15_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_15_rating_2">
+          <label><input type="radio" name="group_15_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_15_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_15_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_15_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_15_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_15_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_15_rating_3">
+          <label><input type="radio" name="group_15_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_15_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_15_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_15_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_15_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_15_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_15_rating_4">
+          <label><input type="radio" name="group_15_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_15_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_15_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_15_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_15_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_15_rating_4">Please rate this metric</div>
+      </div>
+    </div>
+    <!-- End of Group 15 -->
+    <!-- Group 16 -->
+    <div class="group-container">
       <h3>Group 16</h3>
-      <div>
-        <table style="table-layout: fixed;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-            <col span="1" style="width: 20%;">
-          <thead>
-            <tr>
-                <th style="text-align: center">Reference Video</th>
-                <th style="text-align: center">Prompt Following</th>
-                <th style="text-align: center">Motion Quality</th>
-                <th style="text-align: center">Camera Move</th>
-                <th style="text-align: center">Overall Quality</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <video controls>
-                  <source src="../results/luma-raw/videos/8.mp4" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
-                <div class="prompt-text">
-                  <strong>Prompt:</strong> On a theater stage, from extremely dark to have some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
-
-                </div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Does not follow the prompt at all<br>            2. Poor: Barely follows the prompt<br>            3. Fair: Somewhat follows the prompt<br>            4. Good: Mostly follows the prompt<br>            5. Excellent: Perfectly follows the prompt<br><br>
-                <div class="rating" id="group_16_rating_1">
-                  <label><input type="radio" name="group_16_rating_1" value="1"> 1</label>
-                  <label><input type="radio" name="group_16_rating_1" value="2"> 2</label>
-                  <label><input type="radio" name="group_16_rating_1" value="3"> 3</label>
-                  <label><input type="radio" name="group_16_rating_1" value="4"> 4</label>
-                  <label><input type="radio" name="group_16_rating_1" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_16_rating_1">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Motion is extremely choppy<br>            2. Poor: Motion is not smooth<br>            3. Fair: Motion is somewhat smooth<br>            4. Good: Motion is smooth but not flawless<br>            5. Excellent: Motion is perfectly smooth<br><br>
-                <div class="rating" id="group_16_rating_2">
-                  <label><input type="radio" name="group_16_rating_2" value="1"> 1</label>
-                  <label><input type="radio" name="group_16_rating_2" value="2"> 2</label>
-                  <label><input type="radio" name="group_16_rating_2" value="3"> 3</label>
-                  <label><input type="radio" name="group_16_rating_2" value="4"> 4</label>
-                  <label><input type="radio" name="group_16_rating_2" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_16_rating_2">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Camera movement is unnatural<br>            2. Poor: Camera movement is awkward<br>            3. Fair: Camera movement is acceptable<br>            4. Good: Camera movement is natural but not perfect<br>            5. Excellent: Camera movement is perfectly natural<br><br>
-                <div class="rating" id="group_16_rating_3">
-                  <label><input type="radio" name="group_16_rating_3" value="1"> 1</label>
-                  <label><input type="radio" name="group_16_rating_3" value="2"> 2</label>
-                  <label><input type="radio" name="group_16_rating_3" value="3"> 3</label>
-                  <label><input type="radio" name="group_16_rating_3" value="4"> 4</label>
-                  <label><input type="radio" name="group_16_rating_3" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_16_rating_3">Please rate this metric.</div>
-              </td>
-              <td style="text-align: center">
-                1. Very poor: Overall quality is unacceptable<br>            2. Poor: Overall quality is below average<br>            3. Fair: Overall quality is average<br>            4. Good: Overall quality is above average<br>            5. Excellent: Overall quality is outstanding<br><br>
-                <div class="rating" id="group_16_rating_4">
-                  <label><input type="radio" name="group_16_rating_4" value="1"> 1</label>
-                  <label><input type="radio" name="group_16_rating_4" value="2"> 2</label>
-                  <label><input type="radio" name="group_16_rating_4" value="3"> 3</label>
-                  <label><input type="radio" name="group_16_rating_4" value="4"> 4</label>
-                  <label><input type="radio" name="group_16_rating_4" value="5"> 5</label>
-                </div>
-                <div class="warning" id="warning_group_16_rating_4">Please rate this metric.</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div class="video-container">
+        <video controls playsinline>
+          <source src="../results/luma-raw/videos/8.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-      <!-- End of Group 16. -->
-      <br><br>
-      <!-- Submit button -->
-      <div style="text-align: center;">
-        <input type="submit" value="Complete" style="width: 150px; height: 50px;">
-      </div>
-    </form>
+      
+      <div class="prompt-text">
+        <strong>Prompt:</strong> On a theater stage, from extremely dark to have some light on the wall, dark studio, rim lighting, two tone lighting, dimly lit.
 
-    <div id="resultText" style="text-align: center; display: none;">
-      <p>Please copy the following text and paste it into Google Forms(请复制以下文本并粘贴到Google Forms中):</p>
-      <textarea id="resultOutput"></textarea>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Prompt Following</div>
+        <div class="rating" id="group_16_rating_1">
+          <label><input type="radio" name="group_16_rating_1" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_16_rating_1" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_16_rating_1" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_16_rating_1" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_16_rating_1" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_16_rating_1">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Motion Quality</div>
+        <div class="rating" id="group_16_rating_2">
+          <label><input type="radio" name="group_16_rating_2" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_16_rating_2" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_16_rating_2" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_16_rating_2" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_16_rating_2" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_16_rating_2">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Camera Move</div>
+        <div class="rating" id="group_16_rating_3">
+          <label><input type="radio" name="group_16_rating_3" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_16_rating_3" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_16_rating_3" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_16_rating_3" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_16_rating_3" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_16_rating_3">Please rate this metric</div>
+      </div>
+      
+      <div class="metric">
+        <div class="metric-title">Overall Quality</div>
+        <div class="rating" id="group_16_rating_4">
+          <label><input type="radio" name="group_16_rating_4" value="1"><span>1</span></label>
+          <label><input type="radio" name="group_16_rating_4" value="2"><span>2</span></label>
+          <label><input type="radio" name="group_16_rating_4" value="3"><span>3</span></label>
+          <label><input type="radio" name="group_16_rating_4" value="4"><span>4</span></label>
+          <label><input type="radio" name="group_16_rating_4" value="5"><span>5</span></label>
+        </div>
+        <div class="warning" id="warning_group_16_rating_4">Please rate this metric</div>
+      </div>
     </div>
-    <div style="display: flex; justify-content: center; margin-top: 20px;">
-      <iframe src="https://forms.gle/Qaj5fN7ENBCjRJkF8" width="640" height="451" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-    </div>
-  </section>
-</div>
-<script>
-  document.getElementById('evaluationForm').onsubmit = function(event) {
+    <!-- End of Group 16 -->
+    <button type="submit" class="submit-btn">Complete Evaluation</button>
+  </form>
+
+  <div id="resultText" style="display: none;">
+    <p>Please copy the following text and paste it into Google Forms:</p>
+    <textarea id="resultOutput" readonly></textarea>
+    <button id="copyButton" style="width: 100%; padding: 10px; margin-bottom: 10px;">Copy to Clipboard</button>
+  </div>
+  
+  <div class="google-form-container">
+    <iframe src="https://forms.gle/Qaj5fN7ENBCjRJkF8" width="100%" height="450" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+  </div>
+
+  <script>
+    // Add touch-friendly behavior
+    document.querySelectorAll('.rating label').forEach(label => {
+      label.addEventListener('click', function() {
+        // Remove active class from siblings
+        const parent = this.parentNode;
+        parent.querySelectorAll('label').forEach(sibling => {
+          sibling.querySelector('span').style.backgroundColor = '';
+        });
+        
+        // Add active class to selected
+        this.querySelector('span').style.backgroundColor = getColorForValue(this.querySelector('input').value);
+        
+        // Hide warning if visible
+        const warningId = 'warning_' + parent.id;
+        document.getElementById(warningId).style.display = 'none';
+      });
+    });
+    
+    function getColorForValue(value) {
+      const colors = {
+        '1': '#ff4d4d',
+        '2': '#ff9966',
+        '3': '#ffcc00',
+        '4': '#99cc33',
+        '5': '#33cc33'
+      };
+      return colors[value] || '';
+    }
+    
+    document.getElementById('evaluationForm').onsubmit = function(event) {
       event.preventDefault(); // Prevent form from submitting
 
       var resultArray = [];
-      var currentTime = new Date().toISOString();
-      var evaluationIdx = document.getElementById('evaluationIdx').value; // Get evaluation_idx from hidden input
-      var evaluationNumber = "evaluation_" + evaluationIdx; // Construct evaluation number using evaluation_idx
+      var evaluationIdx = document.getElementById('evaluationIdx').value;
+      var evaluationNumber = "evaluation_" + evaluationIdx;
 
       resultArray.push(evaluationNumber);
 
-      // Get user selection for each group
-      var choices = [];
-      var sources = [];
+      // Get ratings for each group
       var ratings = [];
-      var sample_ids = [];
       var valid = true;
 
       for (var i = 1; i <= 16; i++) {
-          var groupName = "group_" + i;
+        var groupName = "group_" + i;
+        
+        // Get ratings for each metric
+        for (var j = 1; j <= 4; j++) {
+          var ratingName = groupName + "_rating_" + j;
+          var rating = document.querySelector('input[name="' + ratingName + '"]:checked')?.value;
           
-          // Get ratings for each caption
-          for (var j = 1; j <= 4; j++) {
-              var rating = document.querySelector('input[name="' + groupName + '_rating_' + j + '"]:checked')?.value;
-              if (!rating) {
-                  document.getElementById('warning_' + groupName + '_rating_' + j).style.display = 'block';
-                  valid = false;
-              } else {
-                  document.getElementById('warning_' + groupName + '_rating_' + j).style.display = 'none';
-                  ratings.push(rating);
-              }
+          if (!rating) {
+            document.getElementById('warning_' + ratingName).style.display = 'block';
+            valid = false;
+          } else {
+            ratings.push(rating);
           }
+        }
       }
 
       if (!valid) {
-          alert('Please rate all captions.');
-          return;
+        alert('Please rate all metrics for all groups');
+        return;
       }
 
       resultArray.push(ratings.join(","));
 
       // Show result text and fill textarea
       var resultText = resultArray.join(",");
-      var resultOutput = document.getElementById('resultOutput');
-      resultOutput.textContent = resultText;
-      resultOutput.style.width = '80%';  // Set the width to 80%
-      resultOutput.style.height = '200px';  // Set the height to 200px
+      document.getElementById('resultOutput').value = resultText;
       document.getElementById('resultText').style.display = 'block';
-      };
-</script>
+      
+      // Scroll to results
+      document.getElementById('resultText').scrollIntoView({behavior: 'smooth'});
+    };
+    
+    // Add copy to clipboard functionality
+    document.getElementById('copyButton').addEventListener('click', function() {
+      var resultOutput = document.getElementById('resultOutput');
+      resultOutput.select();
+      resultOutput.setSelectionRange(0, 99999); // For mobile devices
+      
+      navigator.clipboard.writeText(resultOutput.value)
+        .then(() => {
+          this.textContent = 'Copied!';
+          setTimeout(() => {
+            this.textContent = 'Copy to Clipboard';
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('Failed to copy: ', err);
+        });
+    });
+  </script>
 </body>
 </html>

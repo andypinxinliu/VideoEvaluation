@@ -1,6 +1,7 @@
 import os
 import json
 import random
+from copy import deepcopy
 
 paths_group1 = ['results/luma-raw/videos']
 path_group2 = ['results/ours/videos']
@@ -145,7 +146,7 @@ json_base = {
 
 for i, participant_set in participant_sets.items():
     
-    cur_json = json_base.copy()
+    cur_json = deepcopy(json_base)
     for video_path, prompt_path in zip(participant_set[0], participant_set[1]):
 
         # read the prompt file

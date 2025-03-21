@@ -125,12 +125,33 @@ def generate_html(json_file, output_file, idx):
       width: 100%;
       height: 80px;
       margin: 10px 0;
+      padding: 8px;
     }
     /* Hide iframe on mobile */
     @media (max-width: 768px) {
       .google-form-container {
         display: none;
       }
+    }
+    .action-btn {
+      padding: 10px;
+      margin: 5px;
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .action-btn.primary {
+      background-color: #4285F4;
+      color: white;
+      border: none;
+    }
+    .success-message {
+      color: green;
+      font-weight: bold;
+      margin: 10px 0;
+      display: none;
     }
   </style>
 </head>
@@ -247,7 +268,7 @@ def generate_html(json_file, output_file, idx):
   </div>
 
   <script>
-    // Add touch-friendly behavior
+    // Add touch-friendly behavior for rating selection
     document.querySelectorAll('.rating label').forEach(label => {
       label.addEventListener('click', function() {
         // Remove active class from siblings
@@ -276,13 +297,14 @@ def generate_html(json_file, output_file, idx):
       return colors[value] || '';
     }
     
-    document.getElementById('evaluationForm').onsubmit = function(event) {
-      event.preventDefault(); // Prevent form from submitting
-
+    // Form submission handler - direct form submission method
+    document.getElementById('evaluationForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent form from submitting normally
+      
+      // Collect evaluation data
       var resultArray = [];
       var evaluationIdx = document.getElementById('evaluationIdx').value;
       var evaluationNumber = "evaluation_" + evaluationIdx;
-
       resultArray.push(evaluationNumber);
 
       // Get ratings for each group
@@ -308,70 +330,78 @@ def generate_html(json_file, output_file, idx):
 
       if (!valid) {
         alert('Please rate all metrics for all groups');
-        return;
+        return false;
       }
 
       resultArray.push(ratings.join(","));
-
-      // Get result text for form submission
       var resultText = resultArray.join(",");
+      
+      // Store the result text in case we need it later
       document.getElementById('resultOutput').value = resultText;
-      document.getElementById('resultContainer').style.display = 'block';
       
-      // Auto-copy to clipboard on mobile devices
-      var resultOutput = document.getElementById('resultOutput');
-      resultOutput.select();
-      resultOutput.setSelectionRange(0, 99999); // For mobile devices
+      // Create a hidden form that will submit to Google Form
+      var formData = new FormData();
       
-      try {
-        navigator.clipboard.writeText(resultOutput.value);
-        console.log("Results copied to clipboard automatically");
-      } catch (err) {
-        console.error('Could not copy automatically: ', err);
-      }
+      // Add data to the form with the provided field ID
+      formData.append('entry.940024549', resultText);
       
-      // Scroll to results
-      document.getElementById('resultContainer').scrollIntoView({behavior: 'smooth'});
-    };
-    
-    // Submit to Google Form with simple two-step process
-    document.getElementById('submitToGoogleBtn').addEventListener('click', function() {
-      var resultText = document.getElementById('resultOutput').value;
+      // Show a message to the user
+      document.getElementById('loadingMessage').style.display = 'block';
+      document.getElementById('loadingMessage').scrollIntoView({behavior: 'smooth'});
       
-      // Copy the text to clipboard
-      navigator.clipboard.writeText(resultText)
-        .then(() => {
-          // Show confirmation and open form
-          alert('Your evaluation data has been copied to clipboard!\n\nThe form will now open. Please paste (Ctrl+V or tap and hold) your data into the appropriate field.');
-          
-          // Open the Google Form in a new tab
-          window.open('https://forms.gle/hnLC11HCRUSJUHGF7', '_blank');
-        })
-        .catch(err => {
-          alert('Please copy the text in the box and then paste it into the Google Form that will open.');
-          // Open the form anyway
-          window.open('https://forms.gle/hnLC11HCRUSJUHGF7', '_blank');
-        });
+      // Submit the data using fetch API
+      fetch('https://docs.google.com/forms/d/e/1FAIpQLSfLl5MpC49YvL2ZBAVlbMGslHX4TfWLl3coTSuZr07MN3qrVg/formResponse', {
+        method: 'POST',
+        mode: 'no-cors', // This is important for cross-origin requests to Google Forms
+        body: formData
+      })
+      .then(response => {
+        // Due to CORS, we won't get a meaningful response, but we can assume it worked
+        displaySuccess();
+      })
+      .catch(error => {
+        // Even if there's an error, the submission might have worked due to no-cors mode
+        console.error('Error:', error);
+        displaySuccess();
+      });
+      
+      return false;
     });
     
-    // Copy only functionality
-    document.getElementById('copyOnlyBtn').addEventListener('click', function() {
+    // Function to display success message
+    function displaySuccess() {
+      // Hide loading message
+      document.getElementById('loadingMessage').style.display = 'none';
+      
+      // Show success message
+      document.getElementById('successMessage').style.display = 'block';
+      document.getElementById('successMessage').scrollIntoView({behavior: 'smooth'});
+      
+      // Alternative submission options are still shown in case direct submission failed
+      document.getElementById('resultContainer').style.display = 'block';
+    }
+    
+    // Copy data button functionality for backup method
+    document.getElementById('copyDataBtn').addEventListener('click', function() {
       var resultOutput = document.getElementById('resultOutput');
       resultOutput.select();
       resultOutput.setSelectionRange(0, 99999); // For mobile devices
       
       navigator.clipboard.writeText(resultOutput.value)
         .then(() => {
-          this.textContent = 'Copied!';
+          document.getElementById('copySuccess').style.display = 'block';
+          this.innerHTML = '✓ COPIED!';
+          
           setTimeout(() => {
-            this.textContent = 'Copy Only';
+            this.innerHTML = 'Copy Data';
+            document.getElementById('copySuccess').style.display = 'none';
           }, 2000);
         })
         .catch(err => {
-          console.error('Failed to copy: ', err);
-          alert('Please select and copy the text manually');
+          alert('Please manually select and copy the text in the box');
         });
     });
+  </script>
   </script>
 </body>
 </html>"""

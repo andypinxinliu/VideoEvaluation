@@ -1174,14 +1174,24 @@
     <button type="submit" class="submit-btn">Complete Evaluation</button>
   </form>
 
-  <div id="resultText" style="display: none;">
-    <p>Please copy the following text and paste it into Google Forms:</p>
-    <textarea id="resultOutput" readonly></textarea>
-    <button id="copyButton" style="width: 100%; padding: 10px; margin-bottom: 10px;">Copy to Clipboard</button>
+  <div id="resultContainer" style="display: none; text-align: center; margin-top: 20px;">
+    <div id="resultText">
+      <p>Your evaluation has been recorded:</p>
+      <textarea id="resultOutput" readonly style="margin-bottom: 15px;"></textarea>
+    </div>
+    
+    <button id="submitToGoogleBtn" class="submit-btn" style="background-color: #4285F4;">
+      Submit to Google Form
+    </button>
+    
+    <p style="margin-top: 15px; font-size: 0.8em;">
+      If the button doesn't work, you can <span id="copyManuallyBtn" style="color: blue; text-decoration: underline;">copy the text</span> 
+      and manually <a href="https://forms.gle/Qaj5fN7ENBCjRJkF8" target="_blank">open the form</a>.
+    </p>
   </div>
   
   <div class="google-form-container">
-    <iframe src="https://forms.gle/Qaj5fN7ENBCjRJkF8" width="100%" height="450" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+    <iframe src="https://forms.gle/hnLC11HCRUSJUHGF7" width="100%" height="450" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
   </div>
 
   <script>
@@ -1251,17 +1261,51 @@
 
       resultArray.push(ratings.join(","));
 
-      // Show result text and fill textarea
+      // Get result text for form submission
       var resultText = resultArray.join(",");
       document.getElementById('resultOutput').value = resultText;
-      document.getElementById('resultText').style.display = 'block';
+      document.getElementById('resultContainer').style.display = 'block';
+      
+      // Auto-copy to clipboard on mobile devices
+      var resultOutput = document.getElementById('resultOutput');
+      resultOutput.select();
+      resultOutput.setSelectionRange(0, 99999); // For mobile devices
+      
+      try {
+        navigator.clipboard.writeText(resultOutput.value);
+        console.log("Results copied to clipboard automatically");
+      } catch (err) {
+        console.error('Could not copy automatically: ', err);
+      }
       
       // Scroll to results
-      document.getElementById('resultText').scrollIntoView({behavior: 'smooth'});
+      document.getElementById('resultContainer').scrollIntoView({behavior: 'smooth'});
     };
     
-    // Add copy to clipboard functionality
-    document.getElementById('copyButton').addEventListener('click', function() {
+    // Submit to Google Form with simple two-step process
+    document.getElementById('submitToGoogleBtn').addEventListener('click', function() {
+      var resultText = document.getElementById('resultOutput').value;
+      
+      // Copy the text to clipboard
+      navigator.clipboard.writeText(resultText)
+        .then(() => {
+          // Show confirmation and open form
+          alert('Your evaluation data has been copied to clipboard!
+
+The form will now open. Please paste (Ctrl+V or tap and hold) your data into the appropriate field.');
+          
+          // Open the Google Form in a new tab
+          window.open('https://forms.gle/hnLC11HCRUSJUHGF7', '_blank');
+        })
+        .catch(err => {
+          alert('Please copy the text in the box and then paste it into the Google Form that will open.');
+          // Open the form anyway
+          window.open('https://forms.gle/hnLC11HCRUSJUHGF7', '_blank');
+        });
+    });
+    
+    // Copy only functionality
+    document.getElementById('copyOnlyBtn').addEventListener('click', function() {
       var resultOutput = document.getElementById('resultOutput');
       resultOutput.select();
       resultOutput.setSelectionRange(0, 99999); // For mobile devices
@@ -1270,11 +1314,12 @@
         .then(() => {
           this.textContent = 'Copied!';
           setTimeout(() => {
-            this.textContent = 'Copy to Clipboard';
+            this.textContent = 'Copy Only';
           }, 2000);
         })
         .catch(err => {
           console.error('Failed to copy: ', err);
+          alert('Please select and copy the text manually');
         });
     });
   </script>

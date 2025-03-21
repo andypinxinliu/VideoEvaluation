@@ -297,20 +297,18 @@ def generate_html(json_file, output_file, idx):
       return colors[value] || '';
     }
     
-    // Form submission handler - direct approach instead of event listener
-    const form = document.getElementById('evaluationForm');
-    const submitButton = document.getElementById('submitButton');
-    
-    submitButton.onclick = function(event) {
-      event.preventDefault(); // Prevent form from submitting normally
-      console.log("Submit button clicked");
+    // Global submit handler function that works on both mobile and desktop
+    function handleFormSubmit(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       
       // Collect evaluation data
       var resultArray = [];
       var evaluationIdx = document.getElementById('evaluationIdx').value;
       var evaluationNumber = "evaluation_" + evaluationIdx;
       resultArray.push(evaluationNumber);
-      console.log("Evaluation ID:", evaluationNumber);
 
       // Get ratings for each group
       var ratings = [];
@@ -337,64 +335,92 @@ def generate_html(json_file, output_file, idx):
         alert('Please rate all metrics for all groups');
         return false;
       }
-      
-      console.log("All ratings collected:", ratings);
+
       resultArray.push(ratings.join(","));
       var resultText = resultArray.join(",");
-      console.log("Final result string:", resultText);
       
-      // Always update the result textarea
+      // Store the result text
       document.getElementById('resultOutput').value = resultText;
       
-      // Always show loading message first
+      // IMPORTANT: Show UI feedback immediately
       document.getElementById('loadingMessage').style.display = 'block';
       document.getElementById('loadingMessage').scrollIntoView({behavior: 'smooth'});
-      console.log("Loading message displayed");
       
-      // Create a hidden form that will submit to Google Form
-      var formData = new FormData();
-      
-      // Add data to the form with the provided field ID
-      formData.append('entry.940024549', resultText);
-      
-      console.log("Attempting to submit to Google Form...");
-      
-      // Force a timeout to ensure UI updates
-      setTimeout(function() {
-        // Submit the data using fetch API
-        fetch('https://docs.google.com/forms/d/e/1FAIpQLSfLl5MpC49YvL2ZBAVlbMGslHX4TfWLl3coTSuZr07MN3qrVg/formResponse', {
-          method: 'POST',
-          mode: 'no-cors', // This is important for cross-origin requests to Google Forms
-          body: formData
-        })
-        .then(response => {
-          console.log("Fetch completed (note: with no-cors mode, we can't see actual success/failure)");
-          // We'll just assume it worked since we can't get response details with no-cors
-          displaySuccess();
-        })
-        .catch(error => {
-          console.error('Error in fetch:', error);
-          // Still display success, as the error is likely just CORS-related
-          displaySuccess();
-        });
-      }, 1000); // Short delay to ensure UI updates
+      // For direct Google Form submission, we'll use a hidden iframe
+      try {
+        // First create our form-submission iframe if it doesn't exist
+        var submissionFrame = document.getElementById('hidden-submission-frame');
+        if (!submissionFrame) {
+          submissionFrame = document.createElement('iframe');
+          submissionFrame.setAttribute('id', 'hidden-submission-frame');
+          submissionFrame.setAttribute('name', 'hidden-submission-frame');
+          submissionFrame.style.display = 'none';
+          document.body.appendChild(submissionFrame);
+        }
+        
+        // Then create a form element we'll submit
+        var dynamicForm = document.createElement('form');
+        dynamicForm.setAttribute('method', 'post');
+        dynamicForm.setAttribute('action', 'https://docs.google.com/forms/d/e/1FAIpQLSfLl5MpC49YvL2ZBAVlbMGslHX4TfWLl3coTSuZr07MN3qrVg/formResponse');
+        dynamicForm.setAttribute('target', 'hidden-submission-frame');
+        
+        // Add our data input field
+        var inputField = document.createElement('input');
+        inputField.setAttribute('type', 'text');
+        inputField.setAttribute('name', 'entry.940024549');
+        inputField.setAttribute('value', resultText);
+        dynamicForm.appendChild(inputField);
+        
+        // Add the form to the page, submit it, and remove it
+        document.body.appendChild(dynamicForm);
+        dynamicForm.submit();
+        
+        // Show success message after a short delay
+        setTimeout(function() {
+          document.getElementById('loadingMessage').style.display = 'none';
+          document.getElementById('successMessage').style.display = 'block';
+          document.getElementById('successMessage').scrollIntoView({behavior: 'smooth'});
+          document.getElementById('resultContainer').style.display = 'block';
+        }, 2000);
+      } 
+      catch (error) {
+        console.error("Error during submission:", error);
+        // Fallback method if iframe submission fails
+        submitViaFetch(resultText);
+      }
       
       return false;
-    };
-    
-    // Function to display success message
-    function displaySuccess() {
-      console.log("Displaying success message");
-      // Hide loading message
-      document.getElementById('loadingMessage').style.display = 'none';
-      
-      // Show success message
-      document.getElementById('successMessage').style.display = 'block';
-      document.getElementById('successMessage').scrollIntoView({behavior: 'smooth'});
-      
-      // Show the alternative submission methods just in case
-      document.getElementById('resultContainer').style.display = 'block';
     }
+    
+    // Fetch API submission as backup
+    function submitViaFetch(resultText) {
+      var formData = new FormData();
+      formData.append('entry.940024549', resultText);
+      
+      fetch('https://docs.google.com/forms/d/e/1FAIpQLSfLl5MpC49YvL2ZBAVlbMGslHX4TfWLl3coTSuZr07MN3qrVg/formResponse', {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+      })
+      .finally(function() {
+        // Always show success message after fetch attempt
+        document.getElementById('loadingMessage').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('successMessage').scrollIntoView({behavior: 'smooth'});
+        document.getElementById('resultContainer').style.display = 'block';
+      });
+    }
+    
+    // Multiple event bindings for better cross-platform compatibility
+    
+    // 1. Handle button click directly
+    document.getElementById('submitButton').addEventListener('click', handleFormSubmit);
+    
+    // 2. Handle form submission event
+    document.getElementById('evaluationForm').addEventListener('submit', handleFormSubmit);
+    
+    // 3. Backup direct assignment
+    document.getElementById('submitButton').onclick = handleFormSubmit;
     
     // Copy data button functionality for backup method
     document.getElementById('copyDataBtn').addEventListener('click', function() {
